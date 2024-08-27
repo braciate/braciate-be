@@ -23,7 +23,6 @@ func (h *AuthHandler) handleSignin(ctx *fiber.Ctx) error {
 
 	select {
 	case <-c.Done():
-
 		return ctx.Status(fiber.StatusRequestTimeout).
 			JSON(utils.StatusMessage(fiber.StatusRequestTimeout))
 	default:

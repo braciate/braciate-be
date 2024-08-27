@@ -4,20 +4,23 @@ import (
 	"github.com/braciate/braciate-be/internal/api/authentication"
 	"github.com/braciate/braciate-be/internal/entity"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
 
 type Repository struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	log *logrus.Logger
 }
 
 type RepositoryItf interface {
 	NewClient(tx bool) (AuthRepositoryItf, error)
 }
 
-func New(db *sqlx.DB) RepositoryItf {
+func New(log *logrus.Logger, db *sqlx.DB) RepositoryItf {
 	return &Repository{
-		DB: db,
+		DB:  db,
+		log: log,
 	}
 }
 
@@ -35,12 +38,14 @@ func (r *Repository) NewClient(tx bool) (AuthRepositoryItf, error) {
 	}
 
 	return &AuthRepository{
-		q: db,
+		q:   db,
+		log: r.log,
 	}, nil
 }
 
 type AuthRepository struct {
-	q sqlx.ExtContext
+	q   sqlx.ExtContext
+	log *logrus.Logger
 }
 
 type AuthRepositoryItf interface {

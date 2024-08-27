@@ -14,6 +14,7 @@ import (
 func (s *AuthService) Signin(ctx context.Context, request authentication.SigninRequest) (authentication.SigninResponse, error) {
 	authRepo, err := s.authRepository.NewClient(false)
 	if err != nil {
+		s.log.Errorf("error creating auth repository: %v", err)
 		return authentication.SigninResponse{}, authentication.ErrInitializeAuthRepository
 	}
 
@@ -22,11 +23,13 @@ func (s *AuthService) Signin(ctx context.Context, request authentication.SigninR
 		if errors.Is(err, authentication.ErrRecordNotFound) {
 			iamUser, err := s.broneAuth.Authenticate(request.NimEmail, request.Password)
 			if err != nil {
+				s.log.Errorf("error authenticating user: %v", err)
 				return authentication.SigninResponse{}, err
 			}
 
 			generateID, err := utils.GenerateRandomString(24)
 			if err != nil {
+				s.log.Errorf("error generating ID: %v", err)
 				return authentication.SigninResponse{}, err
 			}
 
@@ -39,17 +42,20 @@ func (s *AuthService) Signin(ctx context.Context, request authentication.SigninR
 			user.Role = entity.UserRoleStudent
 			hashPass, err := bcrypt.HashPassword(fmt.Sprintf("%s", generateID))
 			if err != nil {
+				s.log.Errorf("error hashing password: %v", err)
 				return authentication.SigninResponse{}, err
 			}
 			user.Password = hashPass
 
 			_, err = authRepo.CreateUser(ctx, user)
 			if err != nil {
+				s.log.Errorf("error creating user: %v", err)
 				return authentication.SigninResponse{}, err
 			}
 
 			accessToken, err := s.generateAccessToken(user)
 			if err != nil {
+				s.log.Errorf("error generating access token: %v", err)
 				return authentication.SigninResponse{}, err
 			}
 
@@ -58,6 +64,7 @@ func (s *AuthService) Signin(ctx context.Context, request authentication.SigninR
 				ExpiredAt:   time.Now().Add(3 * time.Hour).UnixNano(),
 			}, nil
 		} else {
+			s.log.Errorf("error getting user: %v", err)
 			return authentication.SigninResponse{}, err
 		}
 	}
@@ -65,11 +72,13 @@ func (s *AuthService) Signin(ctx context.Context, request authentication.SigninR
 	switch user.Role {
 	case entity.UserRoleDelegation:
 		if err := bcrypt.ComparePassword(user.Password, request.Password); err != nil {
-			return authentication.SigninResponse{}, err
+			s.log.Errorf("error comparing password: %v", err)
+			return authentication.SigninResponse{}, authentication.ErrInvalidNimEmailOrPassword
 		}
 	default:
 		iamUser, err := s.broneAuth.Authenticate(request.NimEmail, request.Password)
 		if err != nil {
+			s.log.Errorf("error authenticating user: %v", err)
 			return authentication.SigninResponse{}, err
 		}
 
@@ -82,6 +91,7 @@ func (s *AuthService) Signin(ctx context.Context, request authentication.SigninR
 
 	accessToken, err := s.generateAccessToken(user)
 	if err != nil {
+		s.log.Errorf("error generating access token: %v", err)
 		return authentication.SigninResponse{}, err
 	}
 
