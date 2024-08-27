@@ -1,0 +1,10 @@
+CREATE TABLE users (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    nim VARCHAR(50) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    faculty VARCHAR(255) NOT NULL,
+    study_program VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role SMALLINT NOT NULL DEFAULT 0
+)

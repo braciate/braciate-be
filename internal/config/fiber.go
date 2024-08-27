@@ -5,6 +5,7 @@ import (
 	"github.com/braciate/braciate-be/internal/pkg/response"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/utils"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
@@ -23,6 +24,7 @@ func NewFiber(log *logrus.Logger) *fiber.App {
 			JSONEncoder:       jsoniter.Marshal,
 			JSONDecoder:       jsoniter.Unmarshal,
 		})
+	app.Use(logger.New())
 	return app
 }
 
