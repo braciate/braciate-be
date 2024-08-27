@@ -14,5 +14,6 @@ var (
 
 // Error from service layer
 var (
-	ErrInitializeAuthRepository = response.NewError(http.StatusInternalServerError, "failed to initialize auth repository")
+	ErrInvalidNimEmailOrPassword = response.NewError(http.StatusBadRequest, "invalid nim, email or password")
+	ErrInitializeAuthRepository  = response.NewError(http.StatusInternalServerError, "failed to initialize auth repository")
 )

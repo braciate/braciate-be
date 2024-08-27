@@ -48,9 +48,9 @@ func (s *Server) RegisterHandler() {
 	validates := validator.NewValidator()
 
 	// Authentication Domain
-	authRepositorys := authRepository.New(s.db)
-	authServices := authService.New(authRepositorys, broneAuths)
-	authHandlers := authHandler.New(authServices, validates)
+	authRepositorys := authRepository.New(s.log, s.db)
+	authServices := authService.New(s.log, authRepositorys, broneAuths)
+	authHandlers := authHandler.New(s.log, authServices, validates)
 
 	s.checkHealth()
 	s.handlers = append(s.handlers, authHandlers)

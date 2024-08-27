@@ -40,6 +40,7 @@ func (r *AuthRepository) GetUserByEmailOrNIM(ctx context.Context, identifier str
 
 	query, args, err := sqlx.Named(queryGetUserByEmailOrNIM, argsKV)
 	if err != nil {
+		r.log.Errorf("GetUserByEmailOrNIM err: %v", err)
 		return entity.User{}, err
 	}
 	query = r.q.Rebind(query)
@@ -69,6 +70,7 @@ func (r *AuthRepository) CreateUser(ctx context.Context, user entity.User) (stri
 
 	query, args, err := sqlx.Named(queryCreateUser, argsKV)
 	if err != nil {
+		r.log.Errorf("CreateUser err: %v", err)
 		return "", err
 	}
 	query = r.q.Rebind(query)
