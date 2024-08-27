@@ -3,6 +3,11 @@ package config
 import (
 	"fmt"
 	"github.com/braciate/braciate-be/database/postgres"
+	authHandler "github.com/braciate/braciate-be/internal/api/authentication/handler"
+	authRepository "github.com/braciate/braciate-be/internal/api/authentication/repository"
+	authService "github.com/braciate/braciate-be/internal/api/authentication/service"
+	broneAuth "github.com/braciate/braciate-be/internal/pkg/brone_auth"
+	"github.com/braciate/braciate-be/internal/pkg/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
@@ -38,8 +43,17 @@ func NewServer(fiberApp *fiber.App, log *logrus.Logger) (*Server, error) {
 }
 
 func (s *Server) RegisterHandler() {
+	// Library
+	broneAuths := broneAuth.New()
+	validates := validator.NewValidator()
+
+	// Authentication Domain
+	authRepositorys := authRepository.New(s.db)
+	authServices := authService.New(authRepositorys, broneAuths)
+	authHandlers := authHandler.New(authServices, validates)
+
 	s.checkHealth()
-	s.handlers = append(s.handlers)
+	s.handlers = append(s.handlers, authHandlers)
 }
 
 func (s *Server) Run() error {
@@ -63,7 +77,7 @@ func (s *Server) Run() error {
 }
 
 func (s *Server) checkHealth() {
-	s.engine.Get("/health", func(c *fiber.Ctx) error {
+	s.engine.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"message": "🚗💨Beep Beep Your Server is Healthy!",
 		})
