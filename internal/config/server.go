@@ -2,16 +2,23 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/braciate/braciate-be/database/postgres"
 	authHandler "github.com/braciate/braciate-be/internal/api/authentication/handler"
 	authRepository "github.com/braciate/braciate-be/internal/api/authentication/repository"
 	authService "github.com/braciate/braciate-be/internal/api/authentication/service"
+	categoriesHandler "github.com/braciate/braciate-be/internal/api/categories/handler"
+	categoriesRepository "github.com/braciate/braciate-be/internal/api/categories/repository"
+	categoriesService "github.com/braciate/braciate-be/internal/api/categories/service"
+	nominationsHandler "github.com/braciate/braciate-be/internal/api/nominations/handler"
+	nominationsRepository "github.com/braciate/braciate-be/internal/api/nominations/repository"
+	nominationsService "github.com/braciate/braciate-be/internal/api/nominations/service"
 	broneAuth "github.com/braciate/braciate-be/internal/pkg/brone_auth"
 	"github.com/braciate/braciate-be/internal/pkg/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
-	"os"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -52,8 +59,18 @@ func (s *Server) RegisterHandler() {
 	authServices := authService.New(s.log, authRepositorys, broneAuths)
 	authHandlers := authHandler.New(s.log, authServices, validates)
 
+	// Categories Domain
+	categoriesRepositorys := categoriesRepository.New(s.log, s.db)
+	categoriesServices := categoriesService.New(s.log, categoriesRepositorys)
+	categoriesHandlers := categoriesHandler.New(s.log, categoriesServices, validates)
+
+	// Nominations Domain
+	nominationsRepositorys := nominationsRepository.New(s.log, s.db)
+	nominationsServices := nominationsService.New(s.log, nominationsRepositorys)
+	nominationsHandlers := nominationsHandler.New(s.log, nominationsServices, validates)
+
 	s.checkHealth()
-	s.handlers = append(s.handlers, authHandlers)
+	s.handlers = append(s.handlers, authHandlers, categoriesHandlers, nominationsHandlers)
 }
 
 func (s *Server) Run() error {
