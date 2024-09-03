@@ -17,9 +17,6 @@ func (s *NominationsService) CreateNomination(ctx context.Context, request nomin
 		return nominations.CreateNominationResponse{}, err
 	}
 
-	c, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
 	generateID, err := utils.GenerateRandomString(24)
 	if err != nil {
 		s.log.Errorf("error generating ID: %v", err)
@@ -32,7 +29,7 @@ func (s *NominationsService) CreateNomination(ctx context.Context, request nomin
 		CategoryID: request.CategoryID,
 	}
 
-	_, err = nominationRepo.CreateNomination(c, nominationReq)
+	_, err = nominationRepo.CreateNomination(ctx, nominationReq)
 	if err != nil {
 		return nominations.CreateNominationResponse{}, err
 	}
