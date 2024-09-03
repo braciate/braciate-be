@@ -12,8 +12,8 @@ type NominationsDB struct {
 	CategoryID string
 }
 
-func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination entity.Nominations) (string, error) {
-	id := nomination.ID
+func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination entity.Nominations) (entity.Nominations, error) {
+	var newNomination entity.Nominations
 	argsKV := map[string]interface{}{
 		"id":            nomination.ID,
 		"name":          nomination.Name,
@@ -23,14 +23,14 @@ func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination
 	query, args, err := sqlx.Named(queryCreateNomination, argsKV)
 	if err != nil {
 		r.log.Errorf("CreateNomination err: %v", err)
-		return "", err
+		return entity.Nominations{}, err
 	}
 	query = r.DB.Rebind(query)
 
-	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&id); err != nil {
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newNomination.ID, &newNomination.Name, &newNomination.CategoryID); err != nil {
 		r.log.Errorf("CreateNomination err: %v", err)
-		return "", err
+		return entity.Nominations{}, err
 	}
 
-	return id, nil
+	return newNomination, nil
 }

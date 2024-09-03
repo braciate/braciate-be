@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (s *NominationsService) CreateNomination(ctx context.Context, request nominations.CreateNominationRequest) (nominations.CreateNominationResponse, error) {
+func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq entity.Nominations) (nominations.CreateNominationResponse, error) {
 	nominationRepo, err := s.nominationsRepository.NewClient(false)
 	if err != nil {
 		s.log.Errorf("error creating nomination repository: %v", err)
@@ -23,20 +23,16 @@ func (s *NominationsService) CreateNomination(ctx context.Context, request nomin
 		return nominations.CreateNominationResponse{}, err
 	}
 
-	nominationReq := entity.Nominations{
-		ID:         fmt.Sprintf("%d-%s", time.Now().UTC().UnixMilli(), generateID),
-		Name:       request.Name,
-		CategoryID: request.CategoryID,
-	}
+	nominationReq.ID = fmt.Sprintf("%d-%s", time.Now().UTC().UnixMilli(), generateID)
 
-	_, err = nominationRepo.CreateNomination(ctx, nominationReq)
+	newNomination, err := nominationRepo.CreateNomination(ctx, nominationReq)
 	if err != nil {
 		return nominations.CreateNominationResponse{}, err
 	}
 
 	return nominations.CreateNominationResponse{
-		ID:         nominationReq.ID,
-		Name:       nominationReq.Name,
-		CategoryID: nominationReq.CategoryID,
+		ID:         newNomination.ID,
+		Name:       newNomination.Name,
+		CategoryID: newNomination.CategoryID,
 	}, nil
 }

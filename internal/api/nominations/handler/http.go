@@ -24,4 +24,7 @@ func New(log *logrus.Logger, nominationsService nominationsService.NominationsSe
 func (h *NominationHandler) Start(srv fiber.Router) {
 	nominations := srv.Group("/nominations")
 	nominations.Post("/create", h.CreateNominationHandler)
+
+	categorries := srv.Group("/categories")
+	categorries.Post("/create", h.CreateCategoryHandler)
 }
