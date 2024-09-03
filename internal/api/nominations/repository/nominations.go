@@ -13,6 +13,7 @@ type NominationsDB struct {
 }
 
 func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination entity.Nominations) (string, error) {
+	id := nomination.ID
 	argsKV := map[string]interface{}{
 		"id":            nomination.ID,
 		"name":          nomination.Name,
@@ -26,10 +27,10 @@ func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination
 	}
 	query = r.DB.Rebind(query)
 
-	if _, err := r.DB.ExecContext(ctx, query, args...); err != nil {
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&id); err != nil {
 		r.log.Errorf("CreateNomination err: %v", err)
 		return "", err
 	}
 
-	return nomination.ID, nil
+	return id, nil
 }
