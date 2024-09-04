@@ -1,6 +1,7 @@
 package nominationsService
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -10,29 +11,53 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq entity.Nominations) (nominations.CreateNominationResponse, error) {
+func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq entity.Nominations) (nominations.NominationResponse, error) {
 	nominationRepo, err := s.nominationsRepository.NewClient(false)
 	if err != nil {
 		s.log.Errorf("error creating nomination repository: %v", err)
-		return nominations.CreateNominationResponse{}, err
+		return nominations.NominationResponse{}, err
 	}
 
 	generateID, err := utils.GenerateRandomString(24)
 	if err != nil {
 		s.log.Errorf("error generating ID: %v", err)
-		return nominations.CreateNominationResponse{}, err
+		return nominations.NominationResponse{}, err
 	}
 
 	nominationReq.ID = fmt.Sprintf("%d-%s", time.Now().UTC().UnixMilli(), generateID)
 
 	newNomination, err := nominationRepo.CreateNomination(ctx, nominationReq)
 	if err != nil {
-		return nominations.CreateNominationResponse{}, err
+		if errors.Is(err, nominations.ErrForeignKeyViolation) {
+			s.log.Errorf("Foreign key violation: %v", err)
+			return nominations.NominationResponse{}, nominations.ErrForeignKeyViolation
+		}
+		if errors.Is(err, nominations.ErrUniqueViolation) {
+			s.log.Errorf("Unique violation: %v", err)
+			return nominations.NominationResponse{}, nominations.ErrUniqueViolation
+		}
+		s.log.Errorf("CreateNomination err: %v", err)
+		return nominations.NominationResponse{}, err
 	}
 
-	return nominations.CreateNominationResponse{
+	return nominations.NominationResponse{
 		ID:         newNomination.ID,
 		Name:       newNomination.Name,
 		CategoryID: newNomination.CategoryID,
 	}, nil
+}
+func (s *NominationsService) GetNominationByID(c context.Context, id string) (nominations.NominationResponse, error) {
+	nominationRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error get nomination by ID: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	getNomination, err := nominationRepo.GetNominationByID(c, id)
+
+	return nominations.NominationResponse{
+		ID:         getNomination.ID,
+		Name:       getNomination.Name,
+		CategoryID: getNomination.CategoryID,
+	}, err
 }

@@ -1,8 +1,12 @@
 package nominationsRepository
 
 import (
+	"errors"
+
+	"github.com/braciate/braciate-be/internal/api/nominations"
 	"github.com/braciate/braciate-be/internal/entity"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"golang.org/x/net/context"
 )
 
@@ -28,6 +32,18 @@ func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination
 	query = r.DB.Rebind(query)
 
 	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newNomination.ID, &newNomination.Name, &newNomination.CategoryID); err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) {
+			if pqErr.Code.Name() == "foreign_key_violation" && pqErr.Constraint == "nominations_categories_id_fkey" {
+				r.log.Errorf("Foreign key violation: %v", err)
+				return entity.Nominations{}, nominations.ErrForeignKeyViolation
+			}
+
+			if pqErr.Code.Name() == "unique_violation" {
+				r.log.Errorf("Unique constraint violation: %v", err)
+				return entity.Nominations{}, nominations.ErrUniqueViolation
+			}
+		}
 		r.log.Errorf("CreateNomination err: %v", err)
 		return entity.Nominations{}, err
 	}

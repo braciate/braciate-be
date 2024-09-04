@@ -48,6 +48,9 @@ type NominationsRepository struct {
 }
 
 type NominationsRepositoryItf interface {
+	//Nominations
 	CreateNomination(ctx context.Context, nomination entity.Nominations) (entity.Nominations, error)
-	CreateCategory(ctx context.Context, cateegory entity.Categories) (entity.Categories, error)
+
+	//Categories
+	CreateCategory(ctx context.Context, category entity.Categories) (entity.Categories, error)
 }

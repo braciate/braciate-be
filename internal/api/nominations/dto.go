@@ -4,18 +4,18 @@ type CreateCategoryRequest struct {
 	Name string `json:"name" validate:"required"`
 }
 
-type CreateCategoryResponse struct {
+type CategoryResponse struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 type CreateNominationRequest struct {
 	Name       string `json:"name"`
-	CategoryID string `json:"categories_id"`
+	CategoryID string `json:"category_id"`
 }
 
-type CreateNominationResponse struct {
+type NominationResponse struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
-	CategoryID string `json:"categories_id"`
+	CategoryID string `json:"category_id"`
 }
