@@ -46,18 +46,3 @@ func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq
 		CategoryID: newNomination.CategoryID,
 	}, nil
 }
-func (s *NominationsService) GetNominationByID(c context.Context, id string) (nominations.NominationResponse, error) {
-	nominationRepo, err := s.nominationsRepository.NewClient(false)
-	if err != nil {
-		s.log.Errorf("error get nomination by ID: %v", err)
-		return nominations.NominationResponse{}, err
-	}
-
-	getNomination, err := nominationRepo.GetNominationByID(c, id)
-
-	return nominations.NominationResponse{
-		ID:         getNomination.ID,
-		Name:       getNomination.Name,
-		CategoryID: getNomination.CategoryID,
-	}, err
-}

@@ -1,7 +1,6 @@
 package nominationsHandler
 
 import (
-	"errors"
 	"time"
 
 	"github.com/braciate/braciate-be/internal/api/nominations"
@@ -29,29 +28,6 @@ func (h *NominationHandler) CreateNominationHandler(ctx *fiber.Ctx) error {
 
 	res, err := h.nominationsService.CreateNomination(c, nominationReq)
 	if err != nil {
-		if errors.Is(err, nominations.ErrForeignKeyViolation) {
-			return ctx.Status(fiber.StatusBadRequest).JSON(
-				utils.StatusMessage(fiber.StatusBadRequest))
-		}
-
-		if errors.Is(err, nominations.ErrUniqueViolation) {
-			return ctx.Status(fiber.StatusConflict).JSON(
-				utils.StatusMessage(fiber.StatusConflict))
-		}
-
-		return ctx.Status(fiber.StatusInternalServerError).JSON(
-			utils.StatusMessage(fiber.StatusInternalServerError))
-	}
-
-	select {
-	case <-c.Done():
-		return ctx.Status(fiber.StatusRequestTimeout).JSON(
-			utils.StatusMessage(fiber.StatusRequestTimeout))
-	default:
-		return ctx.Status(fiber.StatusOK).JSON(res)
-	}
-}
-
 		return err
 	}
 
