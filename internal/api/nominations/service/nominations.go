@@ -46,3 +46,23 @@ func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq
 		CategoryID: newNomination.CategoryID,
 	}, nil
 }
+
+func (s *NominationsService) GetNominatonByID(ctx context.Context, id string) (nominations.NominationResponse, error) {
+	nominationRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating nomination repository: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	getNomination, err := nominationRepo.GetNominatonByID(ctx, id)
+	if err != nil {
+		s.log.Errorf("GetNomination err: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	return nominations.NominationResponse{
+		ID:         getNomination.ID,
+		Name:       getNomination.Name,
+		CategoryID: getNomination.CategoryID,
+	}, nil
+}

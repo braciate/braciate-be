@@ -35,3 +35,22 @@ func (s *NominationsService) CreateCategory(ctx context.Context, categoyReq enti
 		Name: newCategory.Name,
 	}, nil
 }
+
+func (s *NominationsService) GetCategoriesByID(ctx context.Context, id string) (nominations.CategoryResponse, error) {
+	categoriesRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("errpr creating categories repository: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	getCategories, err := categoriesRepo.GetCategoriesByID(ctx, id)
+	if err != nil {
+		s.log.Errorf("GetCategories err : %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	return nominations.CategoryResponse{
+		ID:   getCategories.ID,
+		Name: getCategories.Name,
+	}, err
+}

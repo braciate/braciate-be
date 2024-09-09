@@ -16,14 +16,8 @@ type NominationsService struct {
 type NominationsServiceItf interface {
 	//Nominations
 	CreateNomination(ctx context.Context, request entity.Nominations) (nominations.NominationResponse, error)
-
+	GetNominatonByID(ctx context.Context, id string) (nominations.NominationResponse, error)
 	//Categories
 	CreateCategory(ctx context.Context, request entity.Categories) (nominations.CategoryResponse, error)
-}
-
-func New(log *logrus.Logger, repo nominationsRepository.RepositoryItf) NominationsServiceItf {
-	return &NominationsService{
-		nominationsRepository: repo,
-		log:                   log,
-	}
+	GetCategoriesByID(ctx context.Context, id string) (nominations.CategoryResponse, error)
 }

@@ -50,3 +50,26 @@ func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination
 
 	return newNomination, nil
 }
+
+func (r *NominationsRepository) GetNominatonByID(ctx context.Context, id string) (entity.Nominations, error) {
+	var getNomination entity.Nominations
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetNominationByID, argsKV)
+	if err != nil {
+		r.log.Errorf("GetNomination err: %v", err)
+		return entity.Nominations{}, err
+	}
+
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&getNomination.ID, &getNomination.Name, &getNomination.CategoryID); err != nil {
+		r.log.Errorf("GetNomination err: %v", err)
+		return entity.Nominations{}, err
+	}
+
+	return getNomination, nil
+
+}

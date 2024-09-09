@@ -47,3 +47,25 @@ func (r *NominationsRepository) CreateCategory(ctx context.Context, category ent
 
 	return newCategories, nil
 }
+
+func (r *NominationsRepository) GetCategoriesByID(ctx context.Context, id string) (entity.Categories, error) {
+	var getCategories entity.Categories
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetCategoriesByID, argsKV)
+	if err != nil {
+		r.log.Errorf("GetCategories err: %v", err)
+		return entity.Categories{}, err
+	}
+
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&getCategories.ID, &getCategories.Name); err != nil {
+		r.log.Errorf("GetCategories err: %v", err)
+		return entity.Categories{}, err
+	}
+
+	return getCategories, nil
+}
