@@ -21,7 +21,7 @@ func main() {
 
 	app, err := config.NewServer(fiber, logger)
 	if err != nil {
-		log.Fatal("error creating server")
+		log.Fatalf("error creating server: %v", err)
 	}
 
 	app.RegisterHandler()
