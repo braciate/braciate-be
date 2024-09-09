@@ -40,7 +40,7 @@ func (h *NominationHandler) CreateNominationHandler(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *NominationHandler) GetNominatonByID(ctx *fiber.Ctx) error {
+func (h *NominationHandler) GetAllNominatonsByCategoryID(ctx *fiber.Ctx) error {
 	var id string
 	var err error
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -53,7 +53,7 @@ func (h *NominationHandler) GetNominatonByID(ctx *fiber.Ctx) error {
 			utils.StatusMessage(fiber.StatusBadRequest))
 	}
 
-	res, err := h.nominationsService.GetNominatonByID(c, id)
+	res, err := h.nominationsService.GetAllNominationsByCategoryID(c, id)
 	if err != nil {
 		return err
 	}

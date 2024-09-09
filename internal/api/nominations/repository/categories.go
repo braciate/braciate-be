@@ -48,24 +48,29 @@ func (r *NominationsRepository) CreateCategory(ctx context.Context, category ent
 	return newCategories, nil
 }
 
-func (r *NominationsRepository) GetCategoriesByID(ctx context.Context, id string) (entity.Categories, error) {
-	var getCategories entity.Categories
-	argsKV := map[string]interface{}{
-		"id": id,
-	}
+func (r *NominationsRepository) GetAllCategories(ctx context.Context) ([]entity.Categories, error) {
+	var allCategories []entity.Categories
 
-	query, args, err := sqlx.Named(queryGetCategoriesByID, argsKV)
+	rows, err := r.DB.QueryxContext(ctx, queryGetAllCategories)
 	if err != nil {
 		r.log.Errorf("GetCategories err: %v", err)
-		return entity.Categories{}, err
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category entity.Categories
+		if err := rows.StructScan(&category); err != nil {
+			r.log.Errorf("StructScan err: %v", err)
+			return nil, err
+		}
+		allCategories = append(allCategories, category)
 	}
 
-	query = r.DB.Rebind(query)
-
-	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&getCategories.ID, &getCategories.Name); err != nil {
-		r.log.Errorf("GetCategories err: %v", err)
-		return entity.Categories{}, err
+	if err := rows.Err(); err != nil {
+		r.log.Errorf("rows.Err: %v", err)
+		return nil, err
 	}
 
-	return getCategories, nil
+	return allCategories, nil
 }

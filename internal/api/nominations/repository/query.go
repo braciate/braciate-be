@@ -11,15 +11,12 @@ const (
 		VALUES (:id, :name)
 		RETURNING id, name`
 
-	queryGetNominationByID = `
-		SELECT id, name, categories_id
+	queryGetAllNominationByCategoryID = `
+		SELECT id, name, categories_id AS CategoryID
 		FROM Nominations
-		WHERE id = :id
-		LIMIT 1;`
+		WHERE categories_id = :id`
 
-	queryGetCategoriesByID = `
+	queryGetAllCategories = `
 		SELECT id, name
-		FROM Categories
-		WHERE id = :id
-		LIMIT 1;`
+		FROM Categories`
 )

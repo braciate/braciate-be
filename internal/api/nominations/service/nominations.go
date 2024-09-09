@@ -47,22 +47,29 @@ func (s *NominationsService) CreateNomination(ctx context.Context, nominationReq
 	}, nil
 }
 
-func (s *NominationsService) GetNominatonByID(ctx context.Context, id string) (nominations.NominationResponse, error) {
+func (s *NominationsService) GetAllNominationsByCategoryID(ctx context.Context, id string) ([]nominations.NominationResponse, error) {
 	nominationRepo, err := s.nominationsRepository.NewClient(false)
 	if err != nil {
 		s.log.Errorf("error creating nomination repository: %v", err)
-		return nominations.NominationResponse{}, err
+		return nil, err
 	}
 
-	getNomination, err := nominationRepo.GetNominatonByID(ctx, id)
+	getNomination, err := nominationRepo.GetAllNominationsByCategoryID(ctx, id)
 	if err != nil {
 		s.log.Errorf("GetNomination err: %v", err)
-		return nominations.NominationResponse{}, err
+		return nil, err
 	}
 
-	return nominations.NominationResponse{
-		ID:         getNomination.ID,
-		Name:       getNomination.Name,
-		CategoryID: getNomination.CategoryID,
-	}, nil
+	var nominationResponses []nominations.NominationResponse
+	for _, nomination := range getNomination {
+		nominationResponses = append(nominationResponses, nominations.NominationResponse{
+			ID:         nomination.ID,
+			Name:       nomination.Name,
+			CategoryID: nomination.CategoryID,
+		})
+
+	}
+
+	return nominationResponses, nil
+
 }

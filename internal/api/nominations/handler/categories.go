@@ -36,18 +36,11 @@ func (h *NominationHandler) CreateCategoryHandler(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *NominationHandler) GetCategoriesByID(ctx *fiber.Ctx) error {
-	var id string
+func (h *NominationHandler) GetAllCategories(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	id = ctx.Params("id")
-
-	if id == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(
-			utils.StatusMessage(fiber.StatusBadRequest))
-	}
-	res, err := h.nominationsService.GetCategoriesByID(c, id)
+	res, err := h.nominationsService.GetAllCategories(c)
 	if err != nil {
 		return err
 	}
