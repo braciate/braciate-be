@@ -21,3 +21,10 @@ type NominationsServiceItf interface {
 	CreateCategory(ctx context.Context, request entity.Categories) (nominations.CategoryResponse, error)
 	GetCategoriesByID(ctx context.Context, id string) (nominations.CategoryResponse, error)
 }
+
+func New(log *logrus.Logger, repo nominationsRepository.RepositoryItf) NominationsServiceItf {
+	return &NominationsService{
+		nominationsRepository: repo,
+		log:                   log,
+	}
+}
