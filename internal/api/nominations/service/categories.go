@@ -93,3 +93,25 @@ func (s *NominationsService) UpdateCategory(ctx context.Context, req entity.Cate
 		Name: updatedCategory.Name,
 	}, nil
 }
+
+func (s *NominationsService) DeleteCategory(ctx context.Context, id string) (nominations.CategoryResponse, error) {
+	categoryRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating nomination repository: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	deleted, err := categoryRepo.DeleteCategory(ctx, id)
+	if err != nil {
+		s.log.Errorf("GetNomination err: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	res := nominations.CategoryResponse{
+		ID:   deleted.ID,
+		Name: deleted.Name,
+	}
+
+	return res, nil
+
+}

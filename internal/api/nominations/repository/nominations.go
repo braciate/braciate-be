@@ -132,3 +132,24 @@ func (r *NominationsRepository) UpdateNomination(ctx context.Context, UpdateNomi
 
 	return UpdateNomination, nil
 }
+
+func (r *NominationsRepository) DeleteNomination(ctx context.Context, id string) (entity.Nominations, error) {
+	var deleted entity.Nominations
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryDeleteNomination, argsKV)
+	if err != nil {
+		r.log.Errorf("DeleteNomination err: %v", err)
+		return entity.Nominations{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&deleted.ID, &deleted.Name, &deleted.CategoryID); err != nil {
+		r.log.Errorf("DeleteNomination err: %v", err)
+		return entity.Nominations{}, err
+	}
+
+	return deleted, nil
+}

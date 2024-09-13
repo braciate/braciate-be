@@ -116,3 +116,24 @@ func (r *NominationsRepository) UpdateCategory(ctx context.Context, updateCatego
 
 	return updateCategory, nil
 }
+
+func (r *NominationsRepository) DeleteCategory(ctx context.Context, id string) (entity.Categories, error) {
+	var deleted entity.Categories
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryDeleteCategory, argsKV)
+	if err != nil {
+		r.log.Errorf("DeleteCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&deleted.ID, &deleted.Name); err != nil {
+		r.log.Errorf("DeleteCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+
+	return deleted, nil
+}
