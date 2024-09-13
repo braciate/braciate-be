@@ -25,8 +25,10 @@ func (h *NominationHandler) Start(srv fiber.Router) {
 	nominations := srv.Group("/nominations")
 	nominations.Post("/create", h.CreateNominationHandler)
 	nominations.Get("/get/:id", h.GetAllNominatonsByCategoryID)
+	nominations.Patch("/update/:id", h.UpdateNomination)
 
 	categories := srv.Group("/categories")
 	categories.Post("/create", h.CreateCategoryHandler)
 	categories.Get("/get", h.GetAllCategories)
+	categories.Patch("/update/:id", h.UpdateCategory)
 }

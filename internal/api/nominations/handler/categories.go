@@ -11,7 +11,7 @@ import (
 )
 
 func (h *NominationHandler) CreateCategoryHandler(ctx *fiber.Ctx) error {
-	var req nominations.CreateCategoryRequest
+	var req nominations.CategoryRequest
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -49,6 +49,36 @@ func (h *NominationHandler) GetAllCategories(ctx *fiber.Ctx) error {
 	case <-c.Done():
 		return ctx.Status(fiber.StatusRequestTimeout).JSON(
 			utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}
+
+func (h *NominationHandler) UpdateCategory(ctx *fiber.Ctx) error {
+	var req nominations.CategoryRequest
+
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	req, err := h.parseAndBindCategoriesRequest(ctx)
+	if err != nil {
+		return err
+	}
+
+	id := ctx.Params("id")
+
+	categoryUpdateReq := entity.Categories{Name: req.Name}
+
+	res, err := h.nominationsService.UpdateCategory(c, categoryUpdateReq, id)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Unable to update category",
+		})
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(utils.StatusMessage(fiber.StatusRequestTimeout))
 	default:
 		return ctx.Status(fiber.StatusOK).JSON(res)
 	}

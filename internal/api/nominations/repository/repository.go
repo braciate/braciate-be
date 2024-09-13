@@ -51,7 +51,12 @@ type NominationsRepositoryItf interface {
 	//Nominations
 	CreateNomination(ctx context.Context, nomination entity.Nominations) (entity.Nominations, error)
 	GetAllNominationsByCategoryID(ctx context.Context, id string) ([]entity.Nominations, error)
+	GetNominationByID(ctx context.Context, id string) (entity.Nominations, error)
+	UpdateNomination(ctx context.Context, UpdateNomination entity.Nominations) (entity.Nominations, error)
+
 	//Categories
 	CreateCategory(ctx context.Context, category entity.Categories) (entity.Categories, error)
 	GetAllCategories(ctx context.Context) ([]entity.Categories, error)
+	GetCategoryByID(ctx context.Context, id string) (entity.Categories, error)
+	UpdateCategory(ctx context.Context, updateCategory entity.Categories) (entity.Categories, error)
 }
