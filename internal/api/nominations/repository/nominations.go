@@ -50,3 +50,42 @@ func (r *NominationsRepository) CreateNomination(ctx context.Context, nomination
 
 	return newNomination, nil
 }
+
+func (r *NominationsRepository) GetAllNominationsByCategoryID(ctx context.Context, id string) ([]entity.Nominations, error) {
+	var allNominations []entity.Nominations
+
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetAllNominationByCategoryID, argsKV)
+	if err != nil {
+		r.log.Errorf("Error generating query: %v", err)
+		return nil, err
+	}
+
+	query = r.DB.Rebind(query)
+
+	rows, err := r.DB.QueryxContext(ctx, query, args...)
+	if err != nil {
+		r.log.Errorf("Error executing query: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var nomination entity.Nominations
+		if err := rows.StructScan(&nomination); err != nil {
+			r.log.Errorf("Error scanning row: %v", err)
+			return nil, err
+		}
+		allNominations = append(allNominations, nomination)
+	}
+
+	if err := rows.Err(); err != nil {
+		r.log.Errorf("Row iteration error: %v", err)
+		return nil, err
+	}
+
+	return allNominations, nil
+}

@@ -35,3 +35,26 @@ func (s *NominationsService) CreateCategory(ctx context.Context, categoyReq enti
 		Name: newCategory.Name,
 	}, nil
 }
+func (s *NominationsService) GetAllCategories(ctx context.Context) ([]nominations.CategoryResponse, error) {
+	categoriesRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating categories repository: %v", err)
+		return nil, err
+	}
+
+	getCategories, err := categoriesRepo.GetAllCategories(ctx)
+	if err != nil {
+		s.log.Errorf("GetCategories err : %v", err)
+		return nil, err
+	}
+
+	var categoryResponses []nominations.CategoryResponse
+	for _, category := range getCategories {
+		categoryResponses = append(categoryResponses, nominations.CategoryResponse{
+			ID:   category.ID,
+			Name: category.Name,
+		})
+	}
+
+	return categoryResponses, nil
+}

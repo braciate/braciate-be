@@ -35,3 +35,21 @@ func (h *NominationHandler) CreateCategoryHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusOK).JSON(res)
 	}
 }
+
+func (h *NominationHandler) GetAllCategories(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := h.nominationsService.GetAllCategories(c)
+	if err != nil {
+		return err
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(
+			utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}

@@ -10,4 +10,13 @@ const (
 		INSERT INTO Categories (id, name)
 		VALUES (:id, :name)
 		RETURNING id, name`
+
+	queryGetAllNominationByCategoryID = `
+		SELECT id, name, categories_id AS CategoryID
+		FROM Nominations
+		WHERE categories_id = :id`
+
+	queryGetAllCategories = `
+		SELECT id, name
+		FROM Categories`
 )

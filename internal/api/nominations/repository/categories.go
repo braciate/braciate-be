@@ -47,3 +47,30 @@ func (r *NominationsRepository) CreateCategory(ctx context.Context, category ent
 
 	return newCategories, nil
 }
+
+func (r *NominationsRepository) GetAllCategories(ctx context.Context) ([]entity.Categories, error) {
+	var allCategories []entity.Categories
+
+	rows, err := r.DB.QueryxContext(ctx, queryGetAllCategories)
+	if err != nil {
+		r.log.Errorf("GetCategories err: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category entity.Categories
+		if err := rows.StructScan(&category); err != nil {
+			r.log.Errorf("StructScan err: %v", err)
+			return nil, err
+		}
+		allCategories = append(allCategories, category)
+	}
+
+	if err := rows.Err(); err != nil {
+		r.log.Errorf("rows.Err: %v", err)
+		return nil, err
+	}
+
+	return allCategories, nil
+}
