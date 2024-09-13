@@ -114,3 +114,26 @@ func (s *NominationsService) UpdateNomination(ctx context.Context, req entity.No
 		CategoryID: updatedNomination.CategoryID,
 	}, nil
 }
+
+func (s *NominationsService) DeleteNomination(ctx context.Context, id string) (nominations.NominationResponse, error) {
+	nominationRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating nomination repository: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	deleted, err := nominationRepo.DeleteNomination(ctx, id)
+	if err != nil {
+		s.log.Errorf("DeleteNomination err: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	res := nominations.NominationResponse{
+		ID:         deleted.ID,
+		Name:       deleted.Name,
+		CategoryID: deleted.CategoryID,
+	}
+
+	return res, nil
+
+}

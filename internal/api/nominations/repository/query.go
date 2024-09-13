@@ -34,4 +34,12 @@ const (
 	queryGetAllCategories = `
 		SELECT id, name
 		FROM Categories`
+
+	queryDeleteCategory = `
+		DELETE FROM Categories WHERE id = :id RETURNING id, name;
+		`
+
+	queryDeleteNomination = `
+		DELETE FROM Nominations WHERE id = :id RETURNING id, name, category_id;
+		`
 )

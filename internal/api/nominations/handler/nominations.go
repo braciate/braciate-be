@@ -65,7 +65,6 @@ func (h *NominationHandler) GetAllNominatonsByCategoryID(ctx *fiber.Ctx) error {
 	default:
 		return ctx.Status(fiber.StatusOK).JSON(res)
 	}
-
 }
 
 func (h *NominationHandler) UpdateNomination(ctx *fiber.Ctx) error {
@@ -93,6 +92,33 @@ func (h *NominationHandler) UpdateNomination(ctx *fiber.Ctx) error {
 	select {
 	case <-c.Done():
 		return ctx.Status(fiber.StatusRequestTimeout).JSON(utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}
+
+func (h *NominationHandler) DeleteNomination(ctx *fiber.Ctx) error {
+	var id string
+	var err error
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	id = ctx.Params("id")
+
+	if id == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(
+			utils.StatusMessage(fiber.StatusBadRequest))
+	}
+
+	res, err := h.nominationsService.DeleteNomination(c, id)
+	if err != nil {
+		return err
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(
+			utils.StatusMessage(fiber.StatusRequestTimeout))
 	default:
 		return ctx.Status(fiber.StatusOK).JSON(res)
 	}
