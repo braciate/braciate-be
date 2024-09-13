@@ -58,3 +58,38 @@ func (s *NominationsService) GetAllCategories(ctx context.Context) ([]nomination
 
 	return categoryResponses, nil
 }
+
+func (s *NominationsService) UpdateCategory(ctx context.Context, req entity.Categories, id string) (nominations.CategoryResponse, error) {
+	categoryRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating category repository: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	oldCategory, err := categoryRepo.GetCategoryByID(ctx, id)
+	if err != nil {
+		s.log.Errorf("error getting category by ID: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	updatedCategory := oldCategory
+	if oldCategory.Name != req.Name {
+		updatedCategory.Name = req.Name
+	} else {
+		return nominations.CategoryResponse{
+			ID:   updatedCategory.ID,
+			Name: updatedCategory.Name,
+		}, err
+	}
+
+	updatedCategory, err = categoryRepo.UpdateCategory(ctx, updatedCategory)
+	if err != nil {
+		s.log.Errorf("error updating category: %v", err)
+		return nominations.CategoryResponse{}, err
+	}
+
+	return nominations.CategoryResponse{
+		ID:   updatedCategory.ID,
+		Name: updatedCategory.Name,
+	}, nil
+}

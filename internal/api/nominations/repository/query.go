@@ -2,19 +2,34 @@ package nominationsRepository
 
 const (
 	queryCreateNomination = `
-		INSERT INTO Nominations (id, name, categories_id)
-		VALUES (:id, :name, :categories_id)
-		RETURNING id, name, categories_id`
+		INSERT INTO Nominations (id, name, category_id)
+		VALUES (:id, :name, :category_id)
+		RETURNING id, name, category_id`
+
+	queryGetNominationByID = `
+		SELECT id, name, category_id FROM Nominations WHERE id = :id`
+
+	queryGetAllNominationByCategoryID = `
+		SELECT id, name, category_id AS CategoryID
+		FROM Nominations
+		WHERE category_id = :id`
+
+	queryUpdateNomination = `
+		 UPDATE Nominations
+    SET name = :name, category_id = :category_id
+    WHERE id = :id
+    RETURNING id, name, category_id`
 
 	queryCreateCategory = `
 		INSERT INTO Categories (id, name)
 		VALUES (:id, :name)
 		RETURNING id, name`
 
-	queryGetAllNominationByCategoryID = `
-		SELECT id, name, categories_id AS CategoryID
-		FROM Nominations
-		WHERE categories_id = :id`
+	queryGetCategoryByID = `
+		SELECT id, name FROM Categories WHERE id = :id`
+
+	queryUpdateCategory = `
+		UPDATE Categories SET name = :name WHERE id = :id RETURNING id, name`
 
 	queryGetAllCategories = `
 		SELECT id, name

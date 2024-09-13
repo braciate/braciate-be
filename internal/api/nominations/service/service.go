@@ -17,9 +17,12 @@ type NominationsServiceItf interface {
 	//Nominations
 	CreateNomination(ctx context.Context, request entity.Nominations) (nominations.NominationResponse, error)
 	GetAllNominationsByCategoryID(ctx context.Context, id string) ([]nominations.NominationResponse, error)
+	UpdateNomination(ctx context.Context, req entity.Nominations, id string) (nominations.NominationResponse, error)
+
 	//Categories
 	CreateCategory(ctx context.Context, request entity.Categories) (nominations.CategoryResponse, error)
 	GetAllCategories(ctx context.Context) ([]nominations.CategoryResponse, error)
+	UpdateCategory(ctx context.Context, req entity.Categories, id string) (nominations.CategoryResponse, error)
 }
 
 func New(log *logrus.Logger, repo nominationsRepository.RepositoryItf) NominationsServiceItf {

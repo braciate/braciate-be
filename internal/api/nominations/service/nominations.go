@@ -73,3 +73,44 @@ func (s *NominationsService) GetAllNominationsByCategoryID(ctx context.Context, 
 	return nominationResponses, nil
 
 }
+func (s *NominationsService) UpdateNomination(ctx context.Context, req entity.Nominations, id string) (nominations.NominationResponse, error) {
+	nominationRepo, err := s.nominationsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating nomination repository: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	oldNomination, err := nominationRepo.GetNominationByID(ctx, id)
+	if err != nil {
+		s.log.Errorf("error getting nomination by ID: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	updatedNomination := oldNomination
+	if oldNomination.Name != req.Name {
+		updatedNomination.Name = req.Name
+	}
+	if oldNomination.CategoryID != req.CategoryID {
+		updatedNomination.CategoryID = req.CategoryID
+	}
+
+	if oldNomination.Name == req.Name && oldNomination.CategoryID == req.CategoryID {
+		return nominations.NominationResponse{
+			ID:         oldNomination.ID,
+			Name:       oldNomination.Name,
+			CategoryID: oldNomination.CategoryID,
+		}, nil
+	}
+
+	updatedNomination, err = nominationRepo.UpdateNomination(ctx, updatedNomination)
+	if err != nil {
+		s.log.Errorf("error updating nomination: %v", err)
+		return nominations.NominationResponse{}, err
+	}
+
+	return nominations.NominationResponse{
+		ID:         updatedNomination.ID,
+		Name:       updatedNomination.Name,
+		CategoryID: updatedNomination.CategoryID,
+	}, nil
+}

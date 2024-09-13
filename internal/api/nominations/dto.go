@@ -1,6 +1,6 @@
 package nominations
 
-type CreateCategoryRequest struct {
+type CategoryRequest struct {
 	Name string `json:"name" validate:"required"`
 }
 
@@ -9,7 +9,7 @@ type CategoryResponse struct {
 	Name string `json:"name"`
 }
 
-type CreateNominationRequest struct {
+type NominationRequest struct {
 	Name       string `json:"name"`
 	CategoryID string `json:"category_id"`
 }

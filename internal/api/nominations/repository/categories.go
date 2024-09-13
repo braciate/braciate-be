@@ -74,3 +74,45 @@ func (r *NominationsRepository) GetAllCategories(ctx context.Context) ([]entity.
 
 	return allCategories, nil
 }
+
+func (r *NominationsRepository) GetCategoryByID(ctx context.Context, id string) (entity.Categories, error) {
+	var getCategories entity.Categories
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetCategoryByID, argsKV)
+	if err != nil {
+		r.log.Errorf("GetCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&getCategories.ID, &getCategories.Name); err != nil {
+		r.log.Errorf("GetCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+
+	return getCategories, nil
+}
+
+func (r *NominationsRepository) UpdateCategory(ctx context.Context, updateCategory entity.Categories) (entity.Categories, error) {
+	argsKV := map[string]interface{}{
+		"id":   updateCategory.ID,
+		"name": updateCategory.Name,
+	}
+
+	query, args, err := sqlx.Named(queryUpdateCategory, argsKV)
+	if err != nil {
+		r.log.Errorf("UpdateCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if _, err := r.DB.ExecContext(ctx, query, args...); err != nil {
+		r.log.Errorf("UpdateCategory err: %v", err)
+		return entity.Categories{}, err
+	}
+
+	return updateCategory, nil
+}

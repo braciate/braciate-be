@@ -5,8 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h *NominationHandler) parseAndBindNominationsRequest(ctx *fiber.Ctx) (nominations.CreateNominationRequest, error) {
-	var req nominations.CreateNominationRequest
+func (h *NominationHandler) parseAndBindNominationsRequest(ctx *fiber.Ctx) (nominations.NominationRequest, error) {
+	var req nominations.NominationRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return req, err
 	}
@@ -18,8 +18,8 @@ func (h *NominationHandler) parseAndBindNominationsRequest(ctx *fiber.Ctx) (nomi
 	return req, nil
 }
 
-func (h *NominationHandler) parseAndBindCategoriesRequest(ctx *fiber.Ctx) (nominations.CreateCategoryRequest, error) {
-	var req nominations.CreateCategoryRequest
+func (h *NominationHandler) parseAndBindCategoriesRequest(ctx *fiber.Ctx) (nominations.CategoryRequest, error) {
+	var req nominations.CategoryRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return req, err
 	}
