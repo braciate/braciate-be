@@ -81,7 +81,7 @@ func (r *NominationsRepository) GetCategoryByID(ctx context.Context, id string) 
 		"id": id,
 	}
 
-	query, args, err := sqlx.Named(quertGetCategoryByID, argsKV)
+	query, args, err := sqlx.Named(queryGetCategoryByID, argsKV)
 	if err != nil {
 		r.log.Errorf("GetCategory err: %v", err)
 		return entity.Categories{}, err

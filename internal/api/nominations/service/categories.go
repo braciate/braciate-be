@@ -72,12 +72,14 @@ func (s *NominationsService) UpdateCategory(ctx context.Context, req entity.Cate
 		return nominations.CategoryResponse{}, err
 	}
 
-	var updatedCategory entity.Categories
+	updatedCategory := oldCategory
 	if oldCategory.Name != req.Name {
-		updatedCategory = entity.Categories{
-			ID:   oldCategory.ID,
-			Name: req.Name,
-		}
+		updatedCategory.Name = req.Name
+	} else {
+		return nominations.CategoryResponse{
+			ID:   updatedCategory.ID,
+			Name: updatedCategory.Name,
+		}, err
 	}
 
 	updatedCategory, err = categoryRepo.UpdateCategory(ctx, updatedCategory)
