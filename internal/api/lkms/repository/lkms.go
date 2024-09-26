@@ -24,7 +24,7 @@ func (r *LkmsRepository) CreateLkms(ctx context.Context, req entity.Lkms) (entit
 		"id":          req.ID,
 		"name":        req.Name,
 		"category_id": req.CategoryID,
-		"logo_link":   req.LogoLink,
+		"logo_file":   req.LogoFile,
 		"type":        req.Type,
 	}
 
@@ -35,7 +35,7 @@ func (r *LkmsRepository) CreateLkms(ctx context.Context, req entity.Lkms) (entit
 	}
 	query = r.DB.Rebind(query)
 
-	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newLkms.ID, &newLkms.Name, &newLkms.CategoryID, &newLkms.LogoLink, &newLkms.Type); err != nil {
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newLkms.ID, &newLkms.Name, &newLkms.CategoryID, &newLkms.LogoFile, &newLkms.Type); err != nil {
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) {
 			if pqErr.Code.Name() == "foreign_key_violation" && pqErr.Constraint == "lkms_user_id_fkey" {

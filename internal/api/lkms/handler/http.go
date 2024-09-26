@@ -1,23 +1,27 @@
 package lkmsHandler
 
 import (
+	lkmsService "github.com/braciate/braciate-be/internal/api/lkms/service"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 )
 
-type lkmsHandler struct {
-	log      *logrus.Logger
-	validate *validator.Validate
+type LkmsHandler struct {
+	lkmsService lkmsService.LkmsServiceItf
+	log         *logrus.Logger
+	validate    *validator.Validate
 }
 
-func New(log *logrus.Logger, validate *validator.Validate) *lkmsHandler {
-	return &lkmsHandler{
-		log:      log,
-		validate: validate,
+func New(log *logrus.Logger, lkmsService lkmsService.LkmsServiceItf, validate *validator.Validate) *LkmsHandler {
+	return &LkmsHandler{
+		lkmsService: lkmsService,
+		log:         log,
+		validate:    validate,
 	}
 }
 
-func (h *lkmsHandler) Start(srv fiber.Router) {
-
+func (h *LkmsHandler) Start(srv fiber.Router) {
+	lkms := srv.Group("/lkms")
+	lkms.Post("/create", h.CreateLkms)
 }

@@ -1,27 +1,55 @@
 package lkmsHandler
 
-// func (h *lkmsHandler) CreateLkms(ctx context.Context) {
-// 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-// 	defer cancel()
+import (
+	"context"
+	"strconv"
+	"time"
 
-// 	name, err := c.FormFile("name")
-// 	if err != nil {
-// 		return err
-// 	}
+	"github.com/braciate/braciate-be/internal/entity"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
+)
 
-// 	logo, err := c.FormFile("logo")
-// 	if err != nil {
-// 		return err
-// 	}
+func (h *LkmsHandler) CreateLkms(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-// 	categoryID, err := c.FormFile("category_id")
-// 	if err != nil {
-// 		return err
-// 	}
+	name := ctx.FormValue("name")
 
-// 	typeLkm, err := c.FormFile("type")
-// 	if err != nil {
-// 		return err
-// 	}
+	logo, err := ctx.FormFile("logo")
 
-// }
+	if err != nil {
+		ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Failed to get 'logo' from form data",
+		})
+		return err
+	}
+
+	categoryID := ctx.FormValue("category_id")
+
+	typeLkm := ctx.FormValue("type")
+
+	typeInt, err := strconv.Atoi(typeLkm)
+	if err != nil {
+		return err
+	}
+
+	lkmsReq := entity.Lkms{
+		Name:       name,
+		CategoryID: categoryID,
+		Type:       typeInt,
+	}
+
+	res, err := h.lkmsService.CreateLkm(c, lkmsReq, logo)
+	if err != nil {
+		return err
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(
+			utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}
