@@ -2,6 +2,7 @@ package lkmsHandler
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -15,6 +16,10 @@ func (h *LkmsHandler) CreateLkms(ctx *fiber.Ctx) error {
 	defer cancel()
 
 	name := ctx.FormValue("name")
+
+	if name == "" {
+		fmt.Println("kosong anjay")
+	}
 
 	logo, err := ctx.FormFile("logo")
 
@@ -41,6 +46,36 @@ func (h *LkmsHandler) CreateLkms(ctx *fiber.Ctx) error {
 	}
 
 	res, err := h.lkmsService.CreateLkm(c, lkmsReq, logo)
+	if err != nil {
+		return err
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(
+			utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}
+
+func (h *LkmsHandler) GetLkmsByCategoryIDAndType(ctx *fiber.Ctx) error {
+	var (
+		id, lkmType string
+		err         error
+	)
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	id = ctx.Params("id")
+	lkmType = ctx.Params("type")
+
+	if id == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(
+			utils.StatusMessage(fiber.StatusBadRequest))
+	}
+
+	res, err := h.lkmsService.GetLkmsByCategoryIDAndType(c, id, lkmType)
 	if err != nil {
 		return err
 	}

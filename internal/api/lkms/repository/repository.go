@@ -50,4 +50,5 @@ type LkmsRepository struct {
 
 type LkmsRepositoryItf interface {
 	CreateLkms(ctx context.Context, req entity.Lkms) (entity.Lkms, error)
+	GetLkmsByCategoryIDAndType(ctx context.Context, id string, lkmType string) ([]entity.Lkms, error)
 }

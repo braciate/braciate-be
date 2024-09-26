@@ -56,3 +56,43 @@ func (r *LkmsRepository) CreateLkms(ctx context.Context, req entity.Lkms) (entit
 	return newLkms, nil
 
 }
+
+func (r *LkmsRepository) GetLkmsByCategoryIDAndType(ctx context.Context, id string, lkmType string) ([]entity.Lkms, error) {
+	var allLkms []entity.Lkms
+
+	argsKV := map[string]interface{}{
+		"id":   id,
+		"type": lkmType,
+	}
+
+	query, args, err := sqlx.Named(queryGetLkmsByCategory, argsKV)
+	if err != nil {
+		r.log.Errorf("Error generating query: %v", err)
+		return nil, err
+	}
+
+	query = r.DB.Rebind(query)
+
+	rows, err := r.DB.QueryxContext(ctx, query, args...)
+	if err != nil {
+		r.log.Errorf("Error executing query: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var lkm entity.Lkms
+		if err := rows.StructScan(&lkm); err != nil {
+			r.log.Errorf("Error scanning row: %v", err)
+			return nil, err
+		}
+		allLkms = append(allLkms, lkm)
+	}
+
+	if err := rows.Err(); err != nil {
+		r.log.Errorf("Row iteration error: %v", err)
+		return nil, err
+	}
+
+	return allLkms, nil
+}

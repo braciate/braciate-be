@@ -24,4 +24,5 @@ func New(log *logrus.Logger, lkmsService lkmsService.LkmsServiceItf, validate *v
 func (h *LkmsHandler) Start(srv fiber.Router) {
 	lkms := srv.Group("/lkms")
 	lkms.Post("/create", h.CreateLkms)
+	lkms.Get("/get/:id/:type", h.GetLkmsByCategoryIDAndType)
 }
