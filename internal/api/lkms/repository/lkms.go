@@ -98,7 +98,7 @@ func (r *LkmsRepository) GetLkmsByCategoryIDAndType(ctx context.Context, id stri
 	return allLkms, nil
 }
 
-func (r *LkmsRepository) UpdateLkms(ctx context.Context, UpdateLkms entity.Lkms) (entity.Lkms, error) {
+func (r *LkmsRepository) UpdateLkm(ctx context.Context, UpdateLkms entity.Lkms) (entity.Lkms, error) {
 	argsKV := map[string]interface{}{
 		"id":          UpdateLkms.ID,
 		"name":        UpdateLkms.Name,
@@ -142,4 +142,25 @@ func (r *LkmsRepository) GetLkmByID(ctx context.Context, id string) (entity.Lkms
 	}
 
 	return getLkm, nil
+}
+
+func (r *LkmsRepository) DeleteLkm(ctx context.Context, id string) (entity.Lkms, error) {
+	var deleted entity.Lkms
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryDeleteLKMS, argsKV)
+	if err != nil {
+		r.log.Errorf("DeleteLkms err: %v", err)
+		return entity.Lkms{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&deleted.ID, &deleted.Name, &deleted.CategoryID, &deleted.LogoFile, &deleted.Type); err != nil {
+		r.log.Errorf("DeleteLkms err: %v", err)
+		return entity.Lkms{}, err
+	}
+
+	return deleted, nil
 }

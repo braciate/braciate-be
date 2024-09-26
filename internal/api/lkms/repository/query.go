@@ -21,4 +21,7 @@ const (
 	SELECT id, name, logo_file AS LogoFile, type, category_id AS CategoryID
 	FROM Lkms
 	WHERE id = :id`
+
+	queryDeleteLKMS = `
+	DELETE FROM Lkms WHERE id = :id RETURNING id, name, category_id, logo_file, type`
 )

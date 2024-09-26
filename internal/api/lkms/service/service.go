@@ -21,6 +21,7 @@ type LkmsServiceItf interface {
 	CreateLkm(ctx context.Context, req entity.Lkms, logo *multipart.FileHeader) (lkms.LkmsResponse, error)
 	GetLkmsByCategoryIDAndType(ctx context.Context, id string, lkmType string) ([]lkms.LkmsResponse, error)
 	UpdateLkms(ctx context.Context, req entity.Lkms, newLogo *multipart.FileHeader) (lkms.LkmsResponse, error)
+	DeleteLkm(ctx context.Context, id string) (lkms.LkmsResponse, error)
 }
 
 func New(log *logrus.Logger, repo lkmsRepository.RepositoryItf, supabase supabase.SupabaseInterface) LkmsServiceItf {
