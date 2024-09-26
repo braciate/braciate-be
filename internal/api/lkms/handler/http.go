@@ -25,4 +25,5 @@ func (h *LkmsHandler) Start(srv fiber.Router) {
 	lkms := srv.Group("/lkms")
 	lkms.Post("/create", h.CreateLkms)
 	lkms.Get("/get/:id/:type", h.GetLkmsByCategoryIDAndType)
+	lkms.Put("/update", h.UpdateLkms)
 }
