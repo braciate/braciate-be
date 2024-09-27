@@ -25,5 +25,6 @@ func (h *UserVotesHandler) Start(srv fiber.Router) {
 	userVotes := srv.Group("/userVotes")
 	userVotes.Post("/create", h.CreateUserVotesHandler)
 	userVotes.Get("/get/:id", h.GetAllUserVotesByNomination)
+	userVotes.Delete("delete/:id", h.DeleteUserVotes)
 
 }

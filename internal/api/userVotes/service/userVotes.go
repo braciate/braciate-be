@@ -75,3 +75,27 @@ func (s *UserVotesService) GetAllUserVotesByNomination(ctx context.Context, id s
 	return voteResponses, nil
 
 }
+
+func (s *UserVotesService) DeleteUserVotes(ctx context.Context, id string) (userVotes.UserVotesResponse, error) {
+	userVotesRepo, err := s.UserVotesRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating nomination repository: %v", err)
+		return userVotes.UserVotesResponse{}, err
+	}
+
+	deleted, err := userVotesRepo.DeleteUserVotes(ctx, id)
+	if err != nil {
+		s.log.Errorf("DeleteUserVotes err: %v", err)
+		return userVotes.UserVotesResponse{}, err
+	}
+
+	res := userVotes.UserVotesResponse{
+		ID:           deleted.ID,
+		UserID:       deleted.UserID,
+		NominationID: deleted.NominationID,
+		LkmID:        deleted.LkmID,
+	}
+
+	return res, nil
+
+}
