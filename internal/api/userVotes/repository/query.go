@@ -8,8 +8,8 @@ const (
 	`
 
 	queryGetUserVoteFromNominationID = `
-	SELECT id, user_id, nomination_id, lkm_id
-	FROM UserVotes
+	SELECT id, user_id AS UserID, nomination_id AS NominationID, lkm_id AS LkmID
+	FROM User_votes
 	WHERE nomination_id = :id`
 
 	queryUpdateUserVote = `

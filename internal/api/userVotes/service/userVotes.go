@@ -47,3 +47,31 @@ func (s *UserVotesService) CreateNomination(ctx context.Context, votesReq entity
 		NominationID: newVotes.NominationID,
 	}, nil
 }
+
+func (s *UserVotesService) GetAllUserVotesByNomination(ctx context.Context, id string) ([]userVotes.UserVotesResponse, error) {
+	userVotesRepo, err := s.UserVotesRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating user votes repository: %v", err)
+		return nil, err
+	}
+
+	getVotes, err := userVotesRepo.GetAllUserVotesByNomination(ctx, id)
+	if err != nil {
+		s.log.Errorf("Get user votes err: %v", err)
+		return nil, err
+	}
+
+	var voteResponses []userVotes.UserVotesResponse
+	for _, vote := range getVotes {
+		voteResponses = append(voteResponses, userVotes.UserVotesResponse{
+			ID:           vote.ID,
+			UserID:       vote.UserID,
+			LkmID:        vote.LkmID,
+			NominationID: vote.NominationID,
+		})
+
+	}
+
+	return voteResponses, nil
+
+}

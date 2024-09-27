@@ -51,4 +51,5 @@ type UserVotesRepository struct {
 
 type UserVotesRepositoryItf interface {
 	CreateUserVotes(ctx context.Context, votes entity.UserVotes) (entity.UserVotes, error)
+	GetAllUserVotesByNomination(ctx context.Context, id string) ([]entity.UserVotes, error)
 }

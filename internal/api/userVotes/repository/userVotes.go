@@ -52,3 +52,42 @@ func (r *UserVotesRepository) CreateUserVotes(ctx context.Context, votes entity.
 
 	return newVotes, nil
 }
+
+func (r *UserVotesRepository) GetAllUserVotesByNomination(ctx context.Context, id string) ([]entity.UserVotes, error) {
+	var allUserVotes []entity.UserVotes
+
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetUserVoteFromNominationID, argsKV)
+	if err != nil {
+		r.log.Errorf("Error generating query: %v", err)
+		return nil, err
+	}
+
+	query = r.DB.Rebind(query)
+
+	rows, err := r.DB.QueryxContext(ctx, query, args...)
+	if err != nil {
+		r.log.Errorf("Error executing query: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var votes entity.UserVotes
+		if err := rows.StructScan(&votes); err != nil {
+			r.log.Errorf("Error scanning row: %v", err)
+			return nil, err
+		}
+		allUserVotes = append(allUserVotes, votes)
+	}
+
+	if err := rows.Err(); err != nil {
+		r.log.Errorf("Row iteration error: %v", err)
+		return nil, err
+	}
+
+	return allUserVotes, nil
+}
