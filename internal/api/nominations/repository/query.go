@@ -15,10 +15,10 @@ const (
 		WHERE category_id = :id`
 
 	queryUpdateNomination = `
-		 UPDATE Nominations
-    SET name = :name, category_id = :category_id
-    WHERE id = :id
-    RETURNING id, name, category_id`
+		UPDATE Nominations
+    	SET name = :name, category_id = :category_id
+    	WHERE id = :id
+    	RETURNING id, name, category_id`
 
 	queryCreateCategory = `
 		INSERT INTO Categories (id, name)
