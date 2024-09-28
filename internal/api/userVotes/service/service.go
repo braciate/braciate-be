@@ -15,7 +15,7 @@ type UserVotesService struct {
 }
 
 type UserVotesServiceItf interface {
-	CreateNomination(ctx context.Context, votesReq entity.UserVotes) (userVotes.UserVotesResponse, error)
+	CreateAssets(ctx context.Context, votesReq entity.UserVotes) (userVotes.UserVotesResponse, error)
 	GetAllUserVotesByNomination(ctx context.Context, id string) ([]userVotes.UserVotesResponse, error)
 	DeleteUserVotes(ctx context.Context, id string) (userVotes.UserVotesResponse, error)
 }
