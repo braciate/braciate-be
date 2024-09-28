@@ -3,7 +3,6 @@ package lkmsRepository
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/braciate/braciate-be/internal/api/lkms"
 	"github.com/braciate/braciate-be/internal/entity"
@@ -123,7 +122,6 @@ func (r *LkmsRepository) UpdateLkm(ctx context.Context, UpdateLkms entity.Lkms) 
 }
 
 func (r *LkmsRepository) GetLkmByID(ctx context.Context, id string) (entity.Lkms, error) {
-	fmt.Println(id)
 	var getLkm entity.Lkms
 	argsKV := map[string]interface{}{
 		"id": id,
