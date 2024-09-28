@@ -40,3 +40,32 @@ func (h *UserVotesHandler) CreateUserVotesHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusOK).JSON(res)
 	}
 }
+
+func (h *UserVotesHandler) GetAllUserVotesByNomination(ctx *fiber.Ctx) error {
+	var (
+		id  string
+		err error
+	)
+	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	id = ctx.Params("id")
+
+	if id == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(
+			utils.StatusMessage(fiber.StatusBadRequest))
+	}
+
+	res, err := h.userVotesService.GetAllUserVotesByNomination(c, id)
+	if err != nil {
+		return err
+	}
+
+	select {
+	case <-c.Done():
+		return ctx.Status(fiber.StatusRequestTimeout).JSON(
+			utils.StatusMessage(fiber.StatusRequestTimeout))
+	default:
+		return ctx.Status(fiber.StatusOK).JSON(res)
+	}
+}

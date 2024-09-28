@@ -24,5 +24,6 @@ func New(log *logrus.Logger, userVotesService votesService.UserVotesServiceItf, 
 func (h *UserVotesHandler) Start(srv fiber.Router) {
 	userVotes := srv.Group("/userVotes")
 	userVotes.Post("/create", h.CreateUserVotesHandler)
+	userVotes.Get("/get/:id", h.GetAllUserVotesByNomination)
 
 }
