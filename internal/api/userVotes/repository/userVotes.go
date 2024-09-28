@@ -91,3 +91,24 @@ func (r *UserVotesRepository) GetAllUserVotesByNomination(ctx context.Context, i
 
 	return allUserVotes, nil
 }
+
+func (r *UserVotesRepository) DeleteUserVotes(ctx context.Context, id string) (entity.UserVotes, error) {
+	var deleted entity.UserVotes
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryDeleteUserVotes, argsKV)
+	if err != nil {
+		r.log.Errorf("DeleteUserVotes err: %v", err)
+		return entity.UserVotes{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&deleted.ID, &deleted.UserID, &deleted.NominationID, &deleted.LkmID); err != nil {
+		r.log.Errorf("DeleteUserVotes err: %v", err)
+		return entity.UserVotes{}, err
+	}
+
+	return deleted, nil
+}
