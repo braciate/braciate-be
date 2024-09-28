@@ -8,10 +8,14 @@ import (
 	authHandler "github.com/braciate/braciate-be/internal/api/authentication/handler"
 	authRepository "github.com/braciate/braciate-be/internal/api/authentication/repository"
 	authService "github.com/braciate/braciate-be/internal/api/authentication/service"
+	lkmsHandler "github.com/braciate/braciate-be/internal/api/lkms/handler"
+	lkmsRepository "github.com/braciate/braciate-be/internal/api/lkms/repository"
+	lkmsService "github.com/braciate/braciate-be/internal/api/lkms/service"
 	nominationsHandler "github.com/braciate/braciate-be/internal/api/nominations/handler"
 	nominationsRepository "github.com/braciate/braciate-be/internal/api/nominations/repository"
 	nominationsService "github.com/braciate/braciate-be/internal/api/nominations/service"
 	broneAuth "github.com/braciate/braciate-be/internal/pkg/brone_auth"
+	"github.com/braciate/braciate-be/internal/pkg/supabase"
 	"github.com/braciate/braciate-be/internal/pkg/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -61,8 +65,13 @@ func (s *Server) RegisterHandler() {
 	nominationsServices := nominationsService.New(s.log, nominationsRepositorys)
 	nominationsHandlers := nominationsHandler.New(s.log, nominationsServices, validates)
 
+	// LKMS Domain
+	supabase := supabase.NewSupabase()
+	lkmsRepositorys := lkmsRepository.New(s.log, s.db)
+	lkmsService := lkmsService.New(s.log, lkmsRepositorys, supabase)
+	lkmsHandler := lkmsHandler.New(s.log, lkmsService, validates)
 	s.checkHealth()
-	s.handlers = append(s.handlers, authHandlers, nominationsHandlers)
+	s.handlers = append(s.handlers, authHandlers, nominationsHandlers, lkmsHandler)
 }
 
 func (s *Server) Run() error {
