@@ -125,7 +125,7 @@ func (s *LkmsService) UpdateLkms(ctx context.Context, req entity.Lkms, newLogo *
 		updatedLkm.Type = req.Type
 	}
 
-	res, err := lkmRepo.UpdateLkms(ctx, updatedLkm)
+	res, err := lkmRepo.UpdateLkm(ctx, updatedLkm)
 	if err != nil {
 		s.log.Errorf("error updating lkm: %v", err)
 		return lkms.LkmsResponse{}, err
@@ -138,4 +138,34 @@ func (s *LkmsService) UpdateLkms(ctx context.Context, req entity.Lkms, newLogo *
 		LogoFile:   res.LogoFile,
 		Type:       res.Type,
 	}, nil
+}
+
+func (s *LkmsService) DeleteLkm(ctx context.Context, id string) (lkms.LkmsResponse, error) {
+	lkmRepo, err := s.lkmsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating lkm repository: %v", err)
+		return lkms.LkmsResponse{}, err
+	}
+
+	deleted, err := lkmRepo.DeleteLkm(ctx, id)
+	if err != nil {
+		s.log.Errorf("DeleteLkm err: %v", err)
+		return lkms.LkmsResponse{}, err
+	}
+
+	if err = s.supabase.Delete(deleted.LogoFile); err != nil {
+		s.log.Errorf("error delete logo at supabase")
+		return lkms.LkmsResponse{}, err
+	}
+
+	res := lkms.LkmsResponse{
+		ID:         deleted.ID,
+		Name:       deleted.Name,
+		CategoryID: deleted.CategoryID,
+		LogoFile:   deleted.LogoFile,
+		Type:       deleted.Type,
+	}
+
+	return res, nil
+
 }

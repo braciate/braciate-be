@@ -52,5 +52,6 @@ type LkmsRepositoryItf interface {
 	CreateLkms(ctx context.Context, req entity.Lkms) (entity.Lkms, error)
 	GetLkmsByCategoryIDAndType(ctx context.Context, id string, lkmType string) ([]entity.Lkms, error)
 	GetLkmByID(ctx context.Context, id string) (entity.Lkms, error)
-	UpdateLkms(ctx context.Context, UpdateLkms entity.Lkms) (entity.Lkms, error)
+	UpdateLkm(ctx context.Context, UpdateLkms entity.Lkms) (entity.Lkms, error)
+	DeleteLkm(ctx context.Context, id string) (entity.Lkms, error)
 }

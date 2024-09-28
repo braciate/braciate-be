@@ -26,4 +26,5 @@ func (h *LkmsHandler) Start(srv fiber.Router) {
 	lkms.Post("/create", h.CreateLkms)
 	lkms.Get("/get/:id/:type", h.GetLkmsByCategoryIDAndType)
 	lkms.Put("/update", h.UpdateLkms)
+	lkms.Delete("/delete/:id", h.DeleteLkm)
 }
