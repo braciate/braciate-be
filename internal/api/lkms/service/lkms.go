@@ -14,7 +14,6 @@ import (
 
 func (s *LkmsService) CreateLkm(ctx context.Context, req entity.Lkms, logo *multipart.FileHeader) (lkms.LkmsResponse, error) {
 	logo.Filename = fmt.Sprintf("%s-%s", strings.Split(logo.Filename, ".")[0], strings.ReplaceAll(time.Now().Format(time.RFC3339), ":", ""))
-	fmt.Println(logo.Filename)
 
 	url, err := s.supabase.UploadFile(logo)
 	if err != nil {
@@ -48,6 +47,34 @@ func (s *LkmsService) CreateLkm(ctx context.Context, req entity.Lkms, logo *mult
 		Name:       newLkm.Name,
 		CategoryID: newLkm.CategoryID,
 		Type:       newLkm.Type,
-		LogoLink:   newLkm.LogoFile,
+		LogoFile:   newLkm.LogoFile,
 	}, err
+}
+
+func (s *LkmsService) GetLkmsByCategoryIDAndType(ctx context.Context, id string, lkmType string) ([]lkms.LkmsResponse, error) {
+	lkmsRepo, err := s.lkmsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating lkms repository: %v", err)
+		return nil, err
+	}
+
+	getLkms, err := lkmsRepo.GetLkmsByCategoryIDAndType(ctx, id, lkmType)
+	if err != nil {
+		s.log.Errorf("GetLkms err: %v", err)
+		return nil, err
+	}
+
+	var LkmsResponse []lkms.LkmsResponse
+	for _, lkm := range getLkms {
+		LkmsResponse = append(LkmsResponse, lkms.LkmsResponse{
+			ID:         lkm.ID,
+			Name:       lkm.Name,
+			CategoryID: lkm.CategoryID,
+			LogoFile:   lkm.LogoFile,
+			Type:       lkm.Type,
+		})
+
+	}
+
+	return LkmsResponse, nil
 }
