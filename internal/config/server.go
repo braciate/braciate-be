@@ -14,6 +14,9 @@ import (
 	nominationsHandler "github.com/braciate/braciate-be/internal/api/nominations/handler"
 	nominationsRepository "github.com/braciate/braciate-be/internal/api/nominations/repository"
 	nominationsService "github.com/braciate/braciate-be/internal/api/nominations/service"
+	votesHandler "github.com/braciate/braciate-be/internal/api/userVotes/handler"
+	votesRepository "github.com/braciate/braciate-be/internal/api/userVotes/repository"
+	votesService "github.com/braciate/braciate-be/internal/api/userVotes/service"
 	broneAuth "github.com/braciate/braciate-be/internal/pkg/brone_auth"
 	"github.com/braciate/braciate-be/internal/pkg/supabase"
 	"github.com/braciate/braciate-be/internal/pkg/validator"
@@ -70,8 +73,13 @@ func (s *Server) RegisterHandler() {
 	lkmsRepositorys := lkmsRepository.New(s.log, s.db)
 	lkmsService := lkmsService.New(s.log, lkmsRepositorys, supabase)
 	lkmsHandler := lkmsHandler.New(s.log, lkmsService, validates)
+
+	//UserVotes Domain
+	votesRepositorys := votesRepository.New(s.log, s.db)
+	votesService := votesService.New(s.log, votesRepositorys)
+	votesHandler := votesHandler.New(s.log, votesService, validates)
 	s.checkHealth()
-	s.handlers = append(s.handlers, authHandlers, nominationsHandlers, lkmsHandler)
+	s.handlers = append(s.handlers, authHandlers, nominationsHandlers, lkmsHandler, votesHandler)
 }
 
 func (s *Server) Run() error {
