@@ -78,3 +78,64 @@ func (s *LkmsService) GetLkmsByCategoryIDAndType(ctx context.Context, id string,
 
 	return LkmsResponse, nil
 }
+
+func (s *LkmsService) UpdateLkms(ctx context.Context, req entity.Lkms, newLogo *multipart.FileHeader) (lkms.LkmsResponse, error) {
+	lkmRepo, err := s.lkmsRepository.NewClient(false)
+	if err != nil {
+		s.log.Errorf("error creating lkms repository: %v", err)
+		return lkms.LkmsResponse{}, err
+	}
+
+	oldLkm, err := lkmRepo.GetLkmByID(ctx, req.ID)
+	if err != nil {
+		s.log.Errorf("error getting lkm by ID: %v", err)
+		return lkms.LkmsResponse{}, err
+	}
+
+	if oldLkm.Name == req.Name && oldLkm.CategoryID == req.CategoryID && oldLkm.Type == req.Type {
+		return lkms.LkmsResponse{
+			ID:         oldLkm.ID,
+			Name:       oldLkm.Name,
+			CategoryID: oldLkm.CategoryID,
+			Type:       oldLkm.Type,
+		}, nil
+	}
+
+	if err := s.supabase.Delete(oldLkm.LogoFile); err != nil {
+		s.log.Errorf("error deleting old logo file")
+		return lkms.LkmsResponse{}, err
+	}
+
+	newLogo.Filename = fmt.Sprintf("%s-%s", strings.Split(newLogo.Filename, ".")[0], strings.ReplaceAll(time.Now().Format(time.RFC3339), ":", ""))
+	link, err := s.supabase.UploadFile(newLogo)
+	if err != nil {
+		s.log.Errorf("error uploading new logo file")
+		return lkms.LkmsResponse{}, err
+	}
+
+	updatedLkm := oldLkm
+	updatedLkm.LogoFile = link
+	if oldLkm.Name != req.Name {
+		updatedLkm.Name = req.Name
+	}
+	if oldLkm.CategoryID != req.CategoryID {
+		updatedLkm.CategoryID = req.CategoryID
+	}
+	if oldLkm.Type != req.Type {
+		updatedLkm.Type = req.Type
+	}
+
+	res, err := lkmRepo.UpdateLkms(ctx, updatedLkm)
+	if err != nil {
+		s.log.Errorf("error updating lkm: %v", err)
+		return lkms.LkmsResponse{}, err
+	}
+
+	return lkms.LkmsResponse{
+		ID:         res.ID,
+		Name:       res.Name,
+		CategoryID: res.CategoryID,
+		LogoFile:   res.LogoFile,
+		Type:       res.Type,
+	}, nil
+}

@@ -3,6 +3,7 @@ package lkmsRepository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/braciate/braciate-be/internal/api/lkms"
 	"github.com/braciate/braciate-be/internal/entity"
@@ -95,4 +96,50 @@ func (r *LkmsRepository) GetLkmsByCategoryIDAndType(ctx context.Context, id stri
 	}
 
 	return allLkms, nil
+}
+
+func (r *LkmsRepository) UpdateLkms(ctx context.Context, UpdateLkms entity.Lkms) (entity.Lkms, error) {
+	argsKV := map[string]interface{}{
+		"id":          UpdateLkms.ID,
+		"name":        UpdateLkms.Name,
+		"category_id": UpdateLkms.CategoryID,
+		"logo_file":   UpdateLkms.LogoFile,
+		"type":        UpdateLkms.Type,
+	}
+
+	query, args, err := sqlx.Named(queryUpdateLkms, argsKV)
+	if err != nil {
+		r.log.Errorf("UpdateLkms err: %v", err)
+		return entity.Lkms{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if _, err := r.DB.ExecContext(ctx, query, args...); err != nil {
+		r.log.Errorf("UpdateLkms err: %v", err)
+		return entity.Lkms{}, err
+	}
+
+	return UpdateLkms, nil
+}
+
+func (r *LkmsRepository) GetLkmByID(ctx context.Context, id string) (entity.Lkms, error) {
+	fmt.Println(id)
+	var getLkm entity.Lkms
+	argsKV := map[string]interface{}{
+		"id": id,
+	}
+
+	query, args, err := sqlx.Named(queryGetLkmByID, argsKV)
+	if err != nil {
+		r.log.Errorf("GetLkm err: %v", err)
+		return entity.Lkms{}, err
+	}
+	query = r.DB.Rebind(query)
+
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&getLkm.ID, &getLkm.Name, &getLkm.LogoFile, &getLkm.Type, &getLkm.CategoryID); err != nil {
+		r.log.Errorf("GetLkm err: %v", err)
+		return entity.Lkms{}, err
+	}
+
+	return getLkm, nil
 }
