@@ -100,7 +100,6 @@ func (s *LkmsService) UpdateLkms(ctx context.Context, req entity.Lkms, newLogo *
 			Type:       oldLkm.Type,
 		}, nil
 	}
-
 	if err := s.supabase.Delete(oldLkm.LogoFile); err != nil {
 		s.log.Errorf("error deleting old logo file")
 		return lkms.LkmsResponse{}, err

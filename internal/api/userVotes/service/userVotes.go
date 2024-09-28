@@ -14,7 +14,7 @@ import (
 func (s *UserVotesService) CreateNomination(ctx context.Context, votesReq entity.UserVotes) (userVotes.UserVotesResponse, error) {
 	userVotesRepo, err := s.UserVotesRepository.NewClient(false)
 	if err != nil {
-		s.log.Errorf("error creating nomination repository: %v", err)
+		s.log.Errorf("error creating user votes repository: %v", err)
 		return userVotes.UserVotesResponse{}, err
 	}
 
@@ -79,7 +79,7 @@ func (s *UserVotesService) GetAllUserVotesByNomination(ctx context.Context, id s
 func (s *UserVotesService) DeleteUserVotes(ctx context.Context, id string) (userVotes.UserVotesResponse, error) {
 	userVotesRepo, err := s.UserVotesRepository.NewClient(false)
 	if err != nil {
-		s.log.Errorf("error creating nomination repository: %v", err)
+		s.log.Errorf("error creating user votes repository: %v", err)
 		return userVotes.UserVotesResponse{}, err
 	}
 
