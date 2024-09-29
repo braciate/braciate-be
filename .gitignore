@@ -2,3 +2,7 @@
 bin
 log.txt
 .idea
+
+.staging.env
+.prod.env
+init-db.sql
