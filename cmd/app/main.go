@@ -10,9 +10,21 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("error loading .env file")
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found. Using environment variables.")
 	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+
+	if dbUser == "" || dbPassword == "" || dbHost == "" || dbPort == "" {
+		log.Fatal("Required environment variables are missing!")
+	}
+
+	log.Printf("Connecting to DB at %s:%s as user %s", dbHost, dbPort, dbUser)
 
 	handleFlagArgs()
 
