@@ -5,6 +5,9 @@ import (
 	"os"
 
 	"github.com/braciate/braciate-be/database/postgres"
+	assetsHandler "github.com/braciate/braciate-be/internal/api/assets/handler"
+	assetsRepository "github.com/braciate/braciate-be/internal/api/assets/repository"
+	assetsService "github.com/braciate/braciate-be/internal/api/assets/service"
 	authHandler "github.com/braciate/braciate-be/internal/api/authentication/handler"
 	authRepository "github.com/braciate/braciate-be/internal/api/authentication/repository"
 	authService "github.com/braciate/braciate-be/internal/api/authentication/service"
@@ -78,8 +81,14 @@ func (s *Server) RegisterHandler() {
 	votesRepositorys := votesRepository.New(s.log, s.db)
 	votesService := votesService.New(s.log, votesRepositorys)
 	votesHandler := votesHandler.New(s.log, votesService, validates)
+
+	//Assets Domain
+	assetsRepositorys := assetsRepository.New(s.log, s.db)
+	assetsService := assetsService.New(s.log, assetsRepositorys)
+	assetsHandler := assetsHandler.New(s.log, assetsService, validates)
+
 	s.checkHealth()
-	s.handlers = append(s.handlers, authHandlers, nominationsHandlers, lkmsHandler, votesHandler)
+	s.handlers = append(s.handlers, authHandlers, nominationsHandlers, lkmsHandler, votesHandler, assetsHandler)
 }
 
 func (s *Server) Run() error {
