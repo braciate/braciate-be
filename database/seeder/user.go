@@ -21,6 +21,17 @@ func UserSeeder(db *sqlx.DB) error {
 			StudyProgram: "Kedokteran", Role: entity.UserRoleAdmin, Faculty: "FILKOM"},
 		{ID: "admin2", Username: "Admin", NIM: "235150000000001", Email: "nandanatyon@student.ub.ac.id",
 			StudyProgram: "Kedokteran", Role: entity.UserRoleAdmin, Faculty: "FILKOM"},
+		{ID: "delegation1", Username: "BEM FILKOM", NIM: "235150000000001", Email: "bemfilkom@braciate.ub.ac.id",
+			StudyProgram: "Kedokteran", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: "satuhatisatujiwafilkom"},
+
+		{ID: "adminDPU", Username: "adminDPU", NIM: "235150000000002", Email: "DPU@student.ub.ac.id",
+			StudyProgram: "DPU", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: os.Getenv("PASSWORDDPU")},
+		{ID: "adminBEM", Username: "adminBEM", NIM: "235150000000003", Email: "BEM@student.ub.ac.id",
+			StudyProgram: "BEM", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: os.Getenv("PASSWORDBEM")},
+		{ID: "adminHIMA", Username: "adminHIMA", NIM: "235150000000004", Email: "HIMA@student.ub.ac.id",
+			StudyProgram: "HIMA", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: os.Getenv("PASSWORDHIMA")},
+		{ID: "adminUKM", Username: "adminUKM", NIM: "235150000000005", Email: "UKM@student.ub.ac.id",
+			StudyProgram: "UKM", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: os.Getenv("PASSWORDUKM")},
 	}
 
 	for _, v := range user {

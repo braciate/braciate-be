@@ -11,7 +11,7 @@ import (
 	"github.com/braciate/braciate-be/internal/pkg/utils"
 )
 
-func (s *UserVotesService) CreateNomination(ctx context.Context, votesReq entity.UserVotes) (userVotes.UserVotesResponse, error) {
+func (s *UserVotesService) CreateAssets(ctx context.Context, votesReq entity.UserVotes) (userVotes.UserVotesResponse, error) {
 	userVotesRepo, err := s.UserVotesRepository.NewClient(false)
 	if err != nil {
 		s.log.Errorf("error creating user votes repository: %v", err)

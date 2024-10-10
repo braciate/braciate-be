@@ -1,33 +1,33 @@
-package votesHandler
+package assetsHandler
 
 import (
 	"context"
 	"time"
 
-	"github.com/braciate/braciate-be/internal/api/userVotes"
+	"github.com/braciate/braciate-be/internal/api/assets"
 	"github.com/braciate/braciate-be/internal/entity"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 )
 
-func (h *UserVotesHandler) CreateUserVotesHandler(ctx *fiber.Ctx) error {
-	var req userVotes.UserVotesRequest
+func (h *AssetsHandler) CreateAssetsHandler(ctx *fiber.Ctx) error {
+	var req assets.AssetsRequest
 
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	req, err := h.parseAndBindUserVotesRequest(ctx)
+	req, err := h.parseAndBindAssetsRequest(ctx)
 	if err != nil {
 		return err
 	}
 
-	votesReq := entity.UserVotes{
+	votesReq := entity.Assets{
 		UserID:       req.UserID,
 		LkmID:        req.LkmID,
 		NominationID: req.NominationID,
 	}
 
-	res, err := h.userVotesService.CreateAssets(c, votesReq)
+	res, err := h.assetsService.CreateAssets(c, votesReq)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (h *UserVotesHandler) CreateUserVotesHandler(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserVotesHandler) GetAllUserVotesByNomination(ctx *fiber.Ctx) error {
+func (h *AssetsHandler) GetAllAssetsByNomination(ctx *fiber.Ctx) error {
 	var (
 		id  string
 		err error
@@ -56,7 +56,7 @@ func (h *UserVotesHandler) GetAllUserVotesByNomination(ctx *fiber.Ctx) error {
 			utils.StatusMessage(fiber.StatusBadRequest))
 	}
 
-	res, err := h.userVotesService.GetAllUserVotesByNomination(c, id)
+	res, err := h.assetsService.GetAllAssetsByNomination(c, id)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (h *UserVotesHandler) GetAllUserVotesByNomination(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserVotesHandler) DeleteUserVotes(ctx *fiber.Ctx) error {
+func (h *AssetsHandler) DeleteAssets(ctx *fiber.Ctx) error {
 	var id string
 	var err error
 	c, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -83,7 +83,7 @@ func (h *UserVotesHandler) DeleteUserVotes(ctx *fiber.Ctx) error {
 			utils.StatusMessage(fiber.StatusBadRequest))
 	}
 
-	res, err := h.userVotesService.DeleteUserVotes(c, id)
+	res, err := h.assetsService.DeleteAssets(c, id)
 	if err != nil {
 		return err
 	}
