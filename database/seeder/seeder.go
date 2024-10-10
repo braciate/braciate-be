@@ -25,6 +25,7 @@ var seeders = []Seeder{
 	{Name: "Lkms-Ukm-Kesenian", Priority: 3, Function: LkmsUkmKesenianSeeder},
 	{Name: "Lkms-Ukm-MinatKhusus", Priority: 3, Function: LkmsUkmMinatKhususSeeder},
 	{Name: "Lkms-Ukm-Penalaran", Priority: 3, Function: LkmsUkmPenalaranSeeder},
+	{Name: "nomination", Priority: 4, Function: NominationSeeder},
 }
 
 func Seed() {

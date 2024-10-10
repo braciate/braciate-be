@@ -221,7 +221,7 @@ func insertLkmsAndUser(db *sqlx.DB, v entity.Lkms, file *xlsx.File) error {
 	_, err = db.Exec("INSERT INTO users (id, name, nim, email, faculty, study_program, role, password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		emailUsername,
 		nameWithoutExt,
-		"235150201111058",
+		"230000000000001",
 		email,
 		"FILKOM",
 		"Delegation",
