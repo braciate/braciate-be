@@ -1,1 +1,1 @@
-DROP TABLE categories CASCADE
+DROP TABLE nominations CASCADE

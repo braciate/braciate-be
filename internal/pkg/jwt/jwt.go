@@ -1,8 +1,10 @@
 package jwt
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -27,4 +29,20 @@ func Sign(Data map[string]interface{}, secretEnvKey string, ExpiredAt time.Durat
 	}
 
 	return accessToken, nil
+}
+
+func VerifyTokenHeader(c *fiber.Ctx, secretEnvKey string) (*jwt.Token, error) {
+	header := c.Get("Authorization")
+	accessToken := strings.SplitAfter(header, "Bearer")[1]
+	JWTSecretKey := os.Getenv(secretEnvKey)
+
+	token, err := jwt.Parse(strings.Trim(accessToken, " "), func(token *jwt.Token) (interface{}, error) {
+		return []byte(JWTSecretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
 }

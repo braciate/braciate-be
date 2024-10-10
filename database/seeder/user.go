@@ -21,15 +21,13 @@ func UserSeeder(db *sqlx.DB) error {
 			StudyProgram: "Kedokteran", Role: entity.UserRoleAdmin, Faculty: "FILKOM"},
 		{ID: "admin2", Username: "Admin", NIM: "235150000000001", Email: "nandanatyon@student.ub.ac.id",
 			StudyProgram: "Kedokteran", Role: entity.UserRoleAdmin, Faculty: "FILKOM"},
-		{ID: "delegation1", Username: "BEM FILKOM", NIM: "235150000000001", Email: "bemfilkom@braciate.ub.ac.id",
-			StudyProgram: "Kedokteran", Role: entity.UserRoleDelegation, Faculty: "FILKOM", Password: "satuhatisatujiwafilkom"},
 	}
 
 	for _, v := range user {
 		var hashPass string
 		var err error
 		switch v.Role {
-		case entity.UserRoleAdmin:
+		case entity.UserRoleDelegation:
 			hashPass, err = bcrypt.HashPassword(v.Password)
 			if err != nil {
 				return err
