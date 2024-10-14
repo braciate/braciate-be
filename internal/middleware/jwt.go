@@ -32,17 +32,48 @@ func JWTAccessToken() fiber.Handler {
 		token, err := jwtHelper.VerifyTokenHeader(c, AccessTokenSecret)
 		if err != nil {
 			return ErrUnauthorized
-		} else {
-			claims := token.Claims.(jwt.MapClaims)
-			user := authentication.UserClaims{
-				ID:       claims["account_id"].(string),
-				Nim:      claims["nim"].(string),
-				Role:     entity.UserRole(claims["role"].(float64)),
-				Email:    claims["email"].(string),
-				Username: claims["username"].(string),
-			}
-			c.Locals("user", user)
-			return c.Next()
 		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || !token.Valid {
+			return ErrUnauthorized
+		}
+
+		// Safely retrieve and type-assert claims
+		userID, ok := claims["account_id"].(string)
+		if !ok {
+			return ErrUnauthorized // or handle the error accordingly
+		}
+
+		nim, ok := claims["nim"].(string)
+		if !ok {
+			nim = "" // Default to empty string if missing
+		}
+
+		role, ok := claims["role"].(float64) // roles might be stored as float64
+		if !ok {
+			return ErrUnauthorized // handle role extraction issue
+		}
+
+		email, ok := claims["email"].(string)
+		if !ok {
+			email = "" // Default to empty string if missing
+		}
+
+		username, ok := claims["username"].(string)
+		if !ok {
+			username = "" // Default to empty string if missing
+		}
+
+		// Set user claims in context for the next handler
+		user := authentication.UserClaims{
+			ID:       userID,
+			Nim:      nim,
+			Role:     entity.UserRole(role),
+			Email:    email,
+			Username: username,
+		}
+		c.Locals("user", user)
+		return c.Next()
 	}
 }
