@@ -14,7 +14,7 @@ import (
 func (s *AssetsService) CreateAssets(ctx context.Context, req entity.Assets) (assets.AssetsResponse, error) {
 	AssetsRepo, err := s.AssetsRepository.NewClient(false)
 	if err != nil {
-		s.log.Errorf("error creating user votes repository: %v", err)
+		s.log.Errorf("error creating asset repository: %v", err)
 		return assets.AssetsResponse{}, err
 	}
 
@@ -26,7 +26,7 @@ func (s *AssetsService) CreateAssets(ctx context.Context, req entity.Assets) (as
 
 	req.ID = fmt.Sprintf("%d-%s", time.Now().UTC().UnixMilli(), generateID)
 
-	newVotes, err := AssetsRepo.CreateAssets(ctx, req)
+	res, err := AssetsRepo.CreateAssets(ctx, req)
 	if err != nil {
 		if errors.Is(err, assets.ErrForeignKeyViolation) {
 			s.log.Errorf("Foreign key violation: %v", err)
@@ -41,45 +41,47 @@ func (s *AssetsService) CreateAssets(ctx context.Context, req entity.Assets) (as
 	}
 
 	return assets.AssetsResponse{
-		ID:           newVotes.ID,
-		UserID:       newVotes.UserID,
-		LkmID:        newVotes.LkmID,
-		NominationID: newVotes.NominationID,
+		ID:           res.ID,
+		UserID:       res.UserID,
+		LkmID:        res.LkmID,
+		NominationID: res.NominationID,
+		Url:          res.Url,
 	}, nil
 }
 
 func (s *AssetsService) GetAllAssetsByNomination(ctx context.Context, id string) ([]assets.AssetsResponse, error) {
 	AssetsRepo, err := s.AssetsRepository.NewClient(false)
 	if err != nil {
-		s.log.Errorf("error creating user votes repository: %v", err)
+		s.log.Errorf("error getting asset repository: %v", err)
 		return nil, err
 	}
 
 	getAsset, err := AssetsRepo.GetAllAssetsByNomination(ctx, id)
 	if err != nil {
-		s.log.Errorf("Get user votes err: %v", err)
+		s.log.Errorf("Get asset err: %v", err)
 		return nil, err
 	}
 
-	var voteResponses []assets.AssetsResponse
-	for _, vote := range getAsset {
-		voteResponses = append(voteResponses, assets.AssetsResponse{
-			ID:           vote.ID,
-			UserID:       vote.UserID,
-			LkmID:        vote.LkmID,
-			NominationID: vote.NominationID,
+	var assetResponses []assets.AssetsResponse
+	for _, asset := range getAsset {
+		assetResponses = append(assetResponses, assets.AssetsResponse{
+			ID:           asset.ID,
+			UserID:       asset.UserID,
+			LkmID:        asset.LkmID,
+			NominationID: asset.NominationID,
+			Url:          asset.Url,
 		})
 
 	}
 
-	return voteResponses, nil
+	return assetResponses, nil
 
 }
 
 func (s *AssetsService) DeleteAssets(ctx context.Context, id string) (assets.AssetsResponse, error) {
 	AssetsRepo, err := s.AssetsRepository.NewClient(false)
 	if err != nil {
-		s.log.Errorf("error creating user votes repository: %v", err)
+		s.log.Errorf("error creating asset repository: %v", err)
 		return assets.AssetsResponse{}, err
 	}
 

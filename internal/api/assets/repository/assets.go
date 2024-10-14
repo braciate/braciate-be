@@ -3,7 +3,6 @@ package assetsRepository
 import (
 	"context"
 	"errors"
-
 	"github.com/braciate/braciate-be/internal/api/assets"
 	"github.com/braciate/braciate-be/internal/entity"
 	"github.com/jmoiron/sqlx"
@@ -34,7 +33,7 @@ func (r *AssetsRepository) CreateAssets(ctx context.Context, asset entity.Assets
 	}
 	query = r.DB.Rebind(query)
 
-	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newAsset.ID, &newAsset.UserID, &newAsset.LkmID, &newAsset.NominationID, &asset.Url); err != nil {
+	if err := r.DB.QueryRowxContext(ctx, query, args...).Scan(&newAsset.ID, &newAsset.UserID, &newAsset.LkmID, &newAsset.NominationID, &newAsset.Url); err != nil {
 		var pqErr *pq.Error
 		if errors.As(err, &pqErr) {
 			if pqErr.Code.Name() == "foreign_key_violation" && pqErr.Constraint == "assets_user_id_fkey" || pqErr.Constraint == "assets_lkm_id_fkey" || pqErr.Constraint == "assets_nomination_id_fkey" {

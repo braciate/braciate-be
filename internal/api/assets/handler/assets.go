@@ -21,13 +21,14 @@ func (h *AssetsHandler) CreateAssetsHandler(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	votesReq := entity.Assets{
+	assetReq := entity.Assets{
 		UserID:       req.UserID,
 		LkmID:        req.LkmID,
 		NominationID: req.NominationID,
+		Url:          req.Url,
 	}
 
-	res, err := h.assetsService.CreateAssets(c, votesReq)
+	res, err := h.assetsService.CreateAssets(c, assetReq)
 	if err != nil {
 		return err
 	}
